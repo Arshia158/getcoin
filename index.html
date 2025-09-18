@@ -1,50 +1,1380 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Update</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-    darkMode: 'class',
-    theme: {
-        extend: {
-            animation: {
-                'float': 'float 6s ease-in-out infinite',
-                'glow': 'glow 2s ease-in-out infinite alternate',
-                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            },
-            keyframes: {
-                float: {
-                    '0%, 100%': { transform: 'translateY(0px)' },
-                    '50%': { transform: 'translateY(-20px)' },
-                },
-                glow: {
-                    from: { boxShadow: '0 0 20px #3b82f6' },
-                    to: { boxShadow: '0 0 30px #3b82f6, 0 0 40px #3b82f6' },
-                }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Coin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            direction: rtl;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px;
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            background: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .level-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-text {
+            font-size: 12px;
+            color: #FFD700;
+        }
+
+        .level-number {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .coin-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .coin-count {
+            font-size: clamp(48px, 12vw, 72px);
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            color: #FFD700;
+            letter-spacing: 1px;
+        }
+
+        .coin-button-container {
+            position: relative;
+            width: clamp(280px, 65vw, 380px);
+            height: clamp(280px, 65vw, 380px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .coin-button {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.5);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coin-button:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease;
+        }
+
+        .coin-button:active:before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .coin-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .coin-icon {
+            font-size: clamp(100px, 25vw, 140px);
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .energy-container {
+            width: 90%;
+            margin-top: 20px;
+        }
+
+        .energy-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 12px;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .energy-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .boost-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 20px;
+            margin-top: 40px;
+        }
+
+        .boost-button {
+            width: clamp(80px, 20vw, 100px);
+            height: clamp(80px, 20vw, 100px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .boost-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .boost-icon {
+            font-size: clamp(24px, 6vw, 32px);
+            margin-bottom: 8px;
+        }
+
+        .boost-text {
+            font-size: clamp(12px, 3vw, 14px);
+            text-align: center;
+        }
+
+        .airdrop-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .airdrop-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .airdrop-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .airdrop-description {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .airdrop-button {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+
+        .airdrop-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .airdrop-button:active {
+            transform: translateY(0);
+        }
+
+        .friends-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .friends-icon {
+            font-size: 80px;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .friends-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        .friends-description {
+            font-size: 18px;
+            line-height: 1.5;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .friends-button {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+
+        .friends-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px 0;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-align: center;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+
+        .stats-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .stats-value {
+            font-weight: bold;
+        }
+
+        .upgrade-section {
+            margin-top: 20px;
+        }
+
+        .upgrade-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .upgrade-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .upgrade-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 15px;
+        }
+
+        .upgrade-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upgrade-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-level {
+            font-size: 14px;
+            color: #FFD700;
+        }
+
+        .upgrade-button {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+
+        .upgrade-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .upgrade-button:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .menu {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            direction: ltr;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item.active {
+            color: #FFD700;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .menu-text {
+            font-size: 12px;
+        }
+
+        .floating-coin {
+            position: absolute;
+            color: #FFD700;
+            font-size: 32px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: float-up 1.5s ease-out forwards;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(0.8);
             }
         }
-    }
-}
-</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<style>
-.gradient-bg {
-    background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 50%, #7e22ce 100%);
-}
-.glass-effect {
-    background: rgba(17, 24, 39, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(55, 65, 81, 0.3);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-</style>
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes particle-animation {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .modal-button {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px;
+            }
+            
+            .user-info, .level-info {
+                padding: 6px 12px;
+            }
+            
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .user-name {
+                font-size: 14px;
+            }
+            
+            .level-text {
+                font-size: 10px;
+            }
+            
+            .level-number {
+                font-size: 16px;
+            }
+            
+            .coin-button-container {
+                margin-bottom: 20px;
+            }
+            
+            .energy-bar {
+                height: 20px;
+            }
+            
+            .energy-text {
+                font-size: 12px;
+            }
+            
+            .boost-container {
+                padding: 0 15px;
+                margin-top: 30px;
+            }
+            
+            .menu {
+                height: 60px;
+            }
+            
+            .menu-item {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .menu-icon {
+                font-size: 20px;
+            }
+            
+            .menu-text {
+                font-size: 10px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+    </style>
 </head>
-<body class="dark gradient-bg min-h-screen flex items-center justify-center">
-    <div class="glass-effect p-12 rounded-3xl text-white text-6xl font-extrabold animate-float animate-glow select-none">
-        update...
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <div class="user-name">کاربر</div>
+            </div>
+            <div class="level-info">
+                <div class="level-text">سطح</div>
+                <div class="level-number" id="level-number">1</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="page active" id="home-page">
+                <div class="coin-container">
+                    <div class="coin-count" id="coin-count">0</div>
+                    <div class="coin-button-container">
+                        <div class="coin-button" id="coin-button">
+                            <i class="fas fa-coins coin-icon"></i>
+                        </div>
+                    </div>
+                    <div class="energy-container">
+                        <div class="energy-label">
+                            <span>انرژی</span>
+                            <span id="energy-text">1000/1000</span>
+                        </div>
+                        <div class="energy-bar">
+                            <div class="energy-fill" id="energy-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="boost-container">
+                    <div class="boost-button" id="boost-turbo">
+                        <i class="fas fa-bolt boost-icon"></i>
+                        <div class="boost-text">توربو</div>
+                    </div>
+                    <div class="boost-button" id="boost-energy">
+                        <i class="fas fa-battery-full boost-icon"></i>
+                        <div class="boost-text">انرژی</div>
+                    </div>
+                    <div class="boost-button" id="boost-bot">
+                        <i class="fas fa-robot boost-icon"></i>
+                        <div class="boost-text">بات</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page" id="airdrop-page">
+                <div class="airdrop-container">
+                    <div class="airdrop-card">
+                        <div class="airdrop-title">دریافت AirDrop</div>
+                        <div class="airdrop-description">
+                            برای دریافت AirDrop، کیف پول خود را متصل کنید و سکه‌های بیشتری کسب کنید!
+                        </div>
+                        <button class="airdrop-button" id="connect-wallet">اتصال به کیف پول</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page" id="friends-page">
+                <div class="friends-container">
+                    <i class="fas fa-user-friends friends-icon"></i>
+                    <div class="friends-title">بخش دوستان</div>
+                    <div class="friends-description">
+                        این بخش در حال بروزرسانی است و به زودی با امکانات جدید در دسترس خواهد بود.
+                    </div>
+                    <button class="friends-button" id="notify-friends">اطلاع رسانی</button>
+                </div>
+            </div>
+            
+            <div class="page" id="stats-page">
+                <div class="stats-container">
+                    <div class="stats-card">
+                        <div class="stats-title">آمار بازی</div>
+                        <div class="stats-item">
+                            <div class="stats-label">سکه‌های کل</div>
+                            <div class="stats-value" id="stats-coins">0</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-label">سطح فعلی</div>
+                            <div class="stats-value" id="stats-level">1</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-label">قدرت ضربه</div>
+                            <div class="stats-value" id="stats-tap-power">1</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-label">حداکثر انرژی</div>
+                            <div class="stats-value" id="stats-max-energy">1000</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-label">تعداد کلیک‌ها</div>
+                            <div class="stats-value" id="stats-taps">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-section">
+                        <div class="stats-title">ارتقاها</div>
+                        
+                        <div class="upgrade-item">
+                            <div class="upgrade-info">
+                                <div class="upgrade-icon">
+                                    <i class="fas fa-hand-pointer"></i>
+                                </div>
+                                <div class="upgrade-details">
+                                    <div class="upgrade-title">قدرت ضربه</div>
+                                    <div class="upgrade-level">سطح: <span id="tap-level">1</span></div>
+                                </div>
+                            </div>
+                            <button class="upgrade-button" id="upgrade-tap">ارتقا (1000)</button>
+                        </div>
+                        
+                        <div class="upgrade-item">
+                            <div class="upgrade-info">
+                                <div class="upgrade-icon">
+                                    <i class="fas fa-battery-full"></i>
+                                </div>
+                                <div class="upgrade-details">
+                                    <div class="upgrade-title">ظرفیت انرژی</div>
+                                    <div class="upgrade-level">سطح: <span id="energy-level">1</span></div>
+                                </div>
+                            </div>
+                            <button class="upgrade-button" id="upgrade-energy">ارتقا (1500)</button>
+                        </div>
+                        
+                        <div class="upgrade-item">
+                            <div class="upgrade-info">
+                                <div class="upgrade-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="upgrade-details">
+                                    <div class="upgrade-title">شارژ انرژی</div>
+                                    <div class="upgrade-level">سطح: <span id="recharge-level">1</span></div>
+                                </div>
+                            </div>
+                            <button class="upgrade-button" id="upgrade-recharge">ارتقا (2000)</button>
+                        </div>
+                        
+                        <div class="upgrade-item">
+                            <div class="upgrade-info">
+                                <div class="upgrade-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="upgrade-details">
+                                    <div class="upgrade-title">بات خودکار</div>
+                                    <div class="upgrade-level">سطح: <span id="bot-level">0</span></div>
+                                </div>
+                            </div>
+                            <button class="upgrade-button" id="upgrade-bot">ارتقا (5000)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu">
+            <div class="menu-item active" id="menu-home">
+                <i class="fas fa-home menu-icon"></i>
+                <div class="menu-text">خانه</div>
+            </div>
+            <div class="menu-item" id="menu-airdrop">
+                <i class="fas fa-parachute-box menu-icon"></i>
+                <div class="menu-text">AirDrop</div>
+            </div>
+            <div class="menu-item" id="menu-friends">
+                <i class="fas fa-user-friends menu-icon"></i>
+                <div class="menu-text">دوستان</div>
+            </div>
+            <div class="menu-item" id="menu-stats">
+                <i class="fas fa-chart-bar menu-icon"></i>
+                <div class="menu-text">آمار</div>
+            </div>
+        </div>
     </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-button" id="close-modal">&times;</button>
+            <div class="modal-title" id="modal-title">عنوان</div>
+            <div class="modal-description" id="modal-description">توضیحات</div>
+            <button class="modal-button" id="modal-button">تایید</button>
+        </div>
+    </div>
+    
+    <script>
+        let coinCount = 0;
+        let level = 1;
+        let energy = 1000;
+        let maxEnergy = 1000;
+        let energyRechargeRate = 1;
+        let tapValue = 1;
+        let turboActive = false;
+        let turboEndTime = 0;
+        let botActive = false;
+        let botEndTime = 0;
+        let totalTaps = 0;
+        
+        let tapLevel = 1;
+        let energyLevel = 1;
+        let rechargeLevel = 1;
+        let botLevel = 0;
+        
+        const coinCountElement = document.getElementById('coin-count');
+        const levelNumberElement = document.getElementById('level-number');
+        const coinButton = document.getElementById('coin-button');
+        const energyFillElement = document.getElementById('energy-fill');
+        const energyTextElement = document.getElementById('energy-text');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalButton = document.getElementById('modal-button');
+        const closeModalButton = document.getElementById('close-modal');
+        const particlesContainer = document.getElementById('particles');
+        
+        const menuHome = document.getElementById('menu-home');
+        const menuAirdrop = document.getElementById('menu-airdrop');
+        const menuFriends = document.getElementById('menu-friends');
+        const menuStats = document.getElementById('menu-stats');
+        
+        const homePage = document.getElementById('home-page');
+        const airdropPage = document.getElementById('airdrop-page');
+        const friendsPage = document.getElementById('friends-page');
+        const statsPage = document.getElementById('stats-page');
+        
+        const statsCoins = document.getElementById('stats-coins');
+        const statsLevel = document.getElementById('stats-level');
+        const statsTapPower = document.getElementById('stats-tap-power');
+        const statsMaxEnergy = document.getElementById('stats-max-energy');
+        const statsTaps = document.getElementById('stats-taps');
+        
+        const tapLevelElement = document.getElementById('tap-level');
+        const energyLevelElement = document.getElementById('energy-level');
+        const rechargeLevelElement = document.getElementById('recharge-level');
+        const botLevelElement = document.getElementById('bot-level');
+        
+        const upgradeTapButton = document.getElementById('upgrade-tap');
+        const upgradeEnergyButton = document.getElementById('upgrade-energy');
+        const upgradeRechargeButton = document.getElementById('upgrade-recharge');
+        const upgradeBotButton = document.getElementById('upgrade-bot');
+        
+        function loadGameData() {
+            const savedCoinCount = localStorage.getItem('coinCount');
+            const savedLevel = localStorage.getItem('level');
+            const savedEnergy = localStorage.getItem('energy');
+            const savedTurboEndTime = localStorage.getItem('turboEndTime');
+            const savedBotEndTime = localStorage.getItem('botEndTime');
+            const savedTotalTaps = localStorage.getItem('totalTaps');
+            
+            const savedTapLevel = localStorage.getItem('tapLevel');
+            const savedEnergyLevel = localStorage.getItem('energyLevel');
+            const savedRechargeLevel = localStorage.getItem('rechargeLevel');
+            const savedBotLevel = localStorage.getItem('botLevel');
+            
+            if (savedCoinCount) coinCount = parseInt(savedCoinCount);
+            if (savedLevel) level = parseInt(savedLevel);
+            if (savedEnergy) energy = parseInt(savedEnergy);
+            if (savedTurboEndTime) turboEndTime = parseInt(savedTurboEndTime);
+            if (savedBotEndTime) botEndTime = parseInt(savedBotEndTime);
+            if (savedTotalTaps) totalTaps = parseInt(savedTotalTaps);
+            
+            if (savedTapLevel) tapLevel = parseInt(savedTapLevel);
+            if (savedEnergyLevel) energyLevel = parseInt(savedEnergyLevel);
+            if (savedRechargeLevel) rechargeLevel = parseInt(savedRechargeLevel);
+            if (savedBotLevel) botLevel = parseInt(savedBotLevel);
+            
+            tapValue = tapLevel;
+            maxEnergy = 1000 + (energyLevel - 1) * 500;
+            energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
+            
+            updateUI();
+            updateUpgradeButtons();
+            
+            if (turboEndTime > Date.now()) {
+                activateTurbo();
+                const remainingTime = Math.floor((turboEndTime - Date.now()) / 1000);
+                setTimeout(() => deactivateTurbo(), remainingTime * 1000);
+            }
+            
+            if (botEndTime > Date.now()) {
+                activateBot();
+                const remainingTime = Math.floor((botEndTime - Date.now()) / 1000);
+                setTimeout(() => deactivateBot(), remainingTime * 1000);
+            }
+        }
+        
+        function saveGameData() {
+            localStorage.setItem('coinCount', coinCount);
+            localStorage.setItem('level', level);
+            localStorage.setItem('energy', energy);
+            localStorage.setItem('turboEndTime', turboEndTime);
+            localStorage.setItem('botEndTime', botEndTime);
+            localStorage.setItem('totalTaps', totalTaps);
+            
+            localStorage.setItem('tapLevel', tapLevel);
+            localStorage.setItem('energyLevel', energyLevel);
+            localStorage.setItem('rechargeLevel', rechargeLevel);
+            localStorage.setItem('botLevel', botLevel);
+        }
+        
+        function updateUI() {
+            coinCountElement.textContent = formatNumber(coinCount);
+            levelNumberElement.textContent = level;
+            energyFillElement.style.width = `${(energy / maxEnergy) * 100}%`;
+            energyTextElement.textContent = `${energy}/${maxEnergy}`;
+            
+            statsCoins.textContent = formatNumber(coinCount);
+            statsLevel.textContent = level;
+            statsTapPower.textContent = tapValue;
+            statsMaxEnergy.textContent = maxEnergy;
+            statsTaps.textContent = formatNumber(totalTaps);
+            
+            tapLevelElement.textContent = tapLevel;
+            energyLevelElement.textContent = energyLevel;
+            rechargeLevelElement.textContent = rechargeLevel;
+            botLevelElement.textContent = botLevel;
+        }
+        
+        function updateUpgradeButtons() {
+            const tapUpgradeCost = tapLevel * 1000;
+            upgradeTapButton.textContent = `ارتقا (${formatNumber(tapUpgradeCost)})`;
+            upgradeTapButton.disabled = coinCount < tapUpgradeCost;
+            
+            const energyUpgradeCost = energyLevel * 1500;
+            upgradeEnergyButton.textContent = `ارتقا (${formatNumber(energyUpgradeCost)})`;
+            upgradeEnergyButton.disabled = coinCount < energyUpgradeCost;
+            
+            const rechargeUpgradeCost = rechargeLevel * 2000;
+            upgradeRechargeButton.textContent = `ارتقا (${formatNumber(rechargeUpgradeCost)})`;
+            upgradeRechargeButton.disabled = coinCount < rechargeUpgradeCost;
+            
+            const botUpgradeCost = (botLevel + 1) * 5000;
+            upgradeBotButton.textContent = `ارتقا (${formatNumber(botUpgradeCost)})`;
+            upgradeBotButton.disabled = coinCount < botUpgradeCost;
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(2) + 'K';
+            }
+            return num.toString();
+        }
+        
+        coinButton.addEventListener('click', function(e) {
+            if (energy <= 0) {
+                showModal('انرژی شما تمام شده', 'لطفاً برای ادامه بازی انرژی خود را شارژ کنید یا صبر کنید تا به طور خودکار شارژ شود.');
+                return;
+            }
+            
+            let currentTapValue = tapValue;
+            if (turboActive) {
+                currentTapValue *= 5;
+            }
+            
+            coinCount += currentTapValue;
+            totalTaps++;
+            
+            energy = Math.max(0, energy - 1);
+            
+            updateUI();
+            updateUpgradeButtons();
+            saveGameData();
+            
+            createFloatingCoin(e, currentTapValue);
+            createParticles(e);
+            
+            checkLevelUp();
+        });
+        
+        function createFloatingCoin(e, value) {
+            const floatingCoin = document.createElement('div');
+            floatingCoin.classList.add('floating-coin');
+            floatingCoin.textContent = `+${value}`;
+            
+            const rect = coinButton.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            floatingCoin.style.left = `${x}px`;
+            floatingCoin.style.top = `${y}px`;
+            
+            coinButton.appendChild(floatingCoin);
+            
+            setTimeout(() => {
+                floatingCoin.remove();
+            }, 1500);
+        }
+        
+        function createParticles(e) {
+            const rect = coinButton.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 12 + 6;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                particle.style.animation = `particle-animation ${Math.random() * 0.6 + 0.4}s ease-out forwards`;
+                
+                coinButton.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }
+        }
+        
+        function checkLevelUp() {
+            const levelThresholds = [100, 1000, 10000, 100000, 1000000, 10000000];
+            
+            if (level < levelThresholds.length && coinCount >= levelThresholds[level - 1]) {
+                level++;
+                maxEnergy += 500;
+                energy = maxEnergy;
+                tapValue += 1;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                showModal('سطح شما افزایش یافت!', `تبریک! شما به سطح ${level} رسیدید. انرژی و قدرت ضربه شما افزایش یافت.`);
+            }
+        }
+        
+        setInterval(() => {
+            if (energy < maxEnergy) {
+                energy = Math.min(maxEnergy, energy + energyRechargeRate);
+                updateUI();
+                saveGameData();
+            }
+        }, 1000);
+        
+        setInterval(() => {
+            if (botActive && energy > 0) {
+                coinCount += tapValue;
+                energy = Math.max(0, energy - 1);
+                totalTaps++;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                coinButton.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    coinButton.style.transform = 'scale(1)';
+                }, 100);
+                
+                checkLevelUp();
+            }
+        }, 1000);
+        
+        document.getElementById('boost-turbo').addEventListener('click', function() {
+            if (turboActive) {
+                showModal('توربو فعال است', `توربو تا ${Math.ceil((turboEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
+                return;
+            }
+            
+            showModal('فعال‌سازی توربو', 'آیا می‌خواهید توربو را برای 30 ثانیه فعال کنید؟', () => {
+                activateTurbo();
+                setTimeout(() => deactivateTurbo(), 30000);
+            });
+        });
+        
+        document.getElementById('boost-energy').addEventListener('click', function() {
+            if (energy >= maxEnergy) {
+                showModal('انرژی کامل', 'انرژی شما در حال حاضر کامل است.');
+                return;
+            }
+            
+            showModal('شارژ انرژی', 'آیا می‌خواهید انرژی خود را به طور کامل شارژ کنید؟', () => {
+                energy = maxEnergy;
+                updateUI();
+                saveGameData();
+            });
+        });
+        
+        document.getElementById('boost-bot').addEventListener('click', function() {
+            if (botActive) {
+                showModal('بات فعال است', `بات تا ${Math.ceil((botEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
+                return;
+            }
+            
+            if (botLevel === 0) {
+                showModal('بات غیرفعال', 'برای استفاده از بات، ابتدا آن را در بخش آمار ارتقا دهید.');
+                return;
+            }
+            
+            showModal('فعال‌سازی بات', 'آیا می‌خواهید بات را برای 1 ساعت فعال کنید؟', () => {
+                activateBot();
+                setTimeout(() => deactivateBot(), 3600000);
+            });
+        });
+        
+        function activateTurbo() {
+            turboActive = true;
+            turboEndTime = Date.now() + 30000;
+            saveGameData();
+            
+            document.getElementById('boost-turbo').style.background = 'rgba(255, 215, 0, 0.3)';
+        }
+        
+        function deactivateTurbo() {
+            turboActive = false;
+            turboEndTime = 0;
+            saveGameData();
+            
+            document.getElementById('boost-turbo').style.background = 'rgba(255, 255, 255, 0.1)';
+        }
+        
+        function activateBot() {
+            botActive = true;
+            botEndTime = Date.now() + 3600000;
+            saveGameData();
+            
+            document.getElementById('boost-bot').style.background = 'rgba(255, 215, 0, 0.3)';
+        }
+        
+        function deactivateBot() {
+            botActive = false;
+            botEndTime = 0;
+            saveGameData();
+            
+            document.getElementById('boost-bot').style.background = 'rgba(255, 255, 255, 0.1)';
+        }
+        
+        upgradeTapButton.addEventListener('click', function() {
+            const cost = tapLevel * 1000;
+            
+            if (coinCount >= cost) {
+                coinCount -= cost;
+                tapLevel++;
+                tapValue = tapLevel;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                showModal('ارتقا موفق', `قدرت ضربه شما به سطح ${tapLevel} افزایش یافت!`);
+            }
+        });
+        
+        upgradeEnergyButton.addEventListener('click', function() {
+            const cost = energyLevel * 1500;
+            
+            if (coinCount >= cost) {
+                coinCount -= cost;
+                energyLevel++;
+                maxEnergy = 1000 + (energyLevel - 1) * 500;
+                energy = maxEnergy;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                showModal('ارتقا موفق', `ظرفیت انرژی شما به سطح ${energyLevel} افزایش یافت!`);
+            }
+        });
+        
+        upgradeRechargeButton.addEventListener('click', function() {
+            const cost = rechargeLevel * 2000;
+            
+            if (coinCount >= cost) {
+                coinCount -= cost;
+                rechargeLevel++;
+                energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                showModal('ارتقا موفق', `نرخ شارژ انرژی شما به سطح ${rechargeLevel} افزایش یافت!`);
+            }
+        });
+        
+        upgradeBotButton.addEventListener('click', function() {
+            const cost = (botLevel + 1) * 5000;
+            
+            if (coinCount >= cost) {
+                coinCount -= cost;
+                botLevel++;
+                
+                updateUI();
+                updateUpgradeButtons();
+                saveGameData();
+                
+                showModal('ارتقا موفق', `بات خودکار شما به سطح ${botLevel} افزایش یافت!`);
+            }
+        });
+        
+        menuHome.addEventListener('click', function() {
+            setActiveMenu(menuHome);
+            setActivePage(homePage);
+        });
+        
+        menuAirdrop.addEventListener('click', function() {
+            setActiveMenu(menuAirdrop);
+            setActivePage(airdropPage);
+        });
+        
+        menuFriends.addEventListener('click', function() {
+            setActiveMenu(menuFriends);
+            setActivePage(friendsPage);
+        });
+        
+        menuStats.addEventListener('click', function() {
+            setActiveMenu(menuStats);
+            setActivePage(statsPage);
+        });
+        
+        function setActiveMenu(activeMenuItem) {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            activeMenuItem.classList.add('active');
+        }
+        
+        function setActivePage(activePage) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            activePage.classList.add('active');
+        }
+        
+        function showModal(title, description, onConfirm) {
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            modal.style.display = 'flex';
+            
+            modalButton.onclick = function() {
+                modal.style.display = 'none';
+                if (onConfirm) onConfirm();
+            };
+        }
+        
+        closeModalButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        document.getElementById('connect-wallet').addEventListener('click', function() {
+            showModal('اتصال به کیف پول', 'این قابلیت به زودی اضافه خواهد شد.');
+        });
+        
+        document.getElementById('notify-friends').addEventListener('click', function() {
+            showModal('اطلاع رسانی', 'شما در زمان آماده شدن این بخش مطلع خواهید شد.');
+        });
+        
+        loadGameData();
+    </script>
 </body>
 </html>
