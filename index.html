@@ -728,8 +728,8 @@
     <div class="container">
         <div class="header">
             <div class="user-info">
-                <div class="user-avatar">U</div>
-                <div class="user-name">کاربر</div>
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-name" id="user-name">کاربر</div>
             </div>
             <div class="level-info">
                 <div class="level-text">سطح</div>
@@ -911,6 +911,21 @@
     </div>
     
     <script>
+        function getUserId() {
+            let userId = localStorage.getItem('user_id');
+            if (!userId) {
+                const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+                userId = 'user_' + btoa(fingerprint).substring(0, 16);
+                localStorage.setItem('user_id', userId);
+            }
+            return userId;
+        }
+
+        function getUserStorageKey(key) {
+            const userId = getUserId();
+            return `${userId}_${key}`;
+        }
+
         let coinCount = 0;
         let level = 1;
         let energy = 1000;
@@ -939,6 +954,8 @@
         const modalButton = document.getElementById('modal-button');
         const closeModalButton = document.getElementById('close-modal');
         const particlesContainer = document.getElementById('particles');
+        const userAvatarElement = document.getElementById('user-avatar');
+        const userNameElement = document.getElementById('user-name');
         
         const menuHome = document.getElementById('menu-home');
         const menuAirdrop = document.getElementById('menu-airdrop');
@@ -967,17 +984,18 @@
         const upgradeBotButton = document.getElementById('upgrade-bot');
         
         function loadGameData() {
-            const savedCoinCount = localStorage.getItem('coinCount');
-            const savedLevel = localStorage.getItem('level');
-            const savedEnergy = localStorage.getItem('energy');
-            const savedTurboEndTime = localStorage.getItem('turboEndTime');
-            const savedBotEndTime = localStorage.getItem('botEndTime');
-            const savedTotalTaps = localStorage.getItem('totalTaps');
+            const savedCoinCount = localStorage.getItem(getUserStorageKey('coinCount'));
+            const savedLevel = localStorage.getItem(getUserStorageKey('level'));
+            const savedEnergy = localStorage.getItem(getUserStorageKey('energy'));
+            const savedTurboEndTime = localStorage.getItem(getUserStorageKey('turboEndTime'));
+            const savedBotEndTime = localStorage.getItem(getUserStorageKey('botEndTime'));
+            const savedTotalTaps = localStorage.getItem(getUserStorageKey('totalTaps'));
+            const savedUserName = localStorage.getItem(getUserStorageKey('userName'));
             
-            const savedTapLevel = localStorage.getItem('tapLevel');
-            const savedEnergyLevel = localStorage.getItem('energyLevel');
-            const savedRechargeLevel = localStorage.getItem('rechargeLevel');
-            const savedBotLevel = localStorage.getItem('botLevel');
+            const savedTapLevel = localStorage.getItem(getUserStorageKey('tapLevel'));
+            const savedEnergyLevel = localStorage.getItem(getUserStorageKey('energyLevel'));
+            const savedRechargeLevel = localStorage.getItem(getUserStorageKey('rechargeLevel'));
+            const savedBotLevel = localStorage.getItem(getUserStorageKey('botLevel'));
             
             if (savedCoinCount) coinCount = parseInt(savedCoinCount);
             if (savedLevel) level = parseInt(savedLevel);
@@ -985,11 +1003,14 @@
             if (savedTurboEndTime) turboEndTime = parseInt(savedTurboEndTime);
             if (savedBotEndTime) botEndTime = parseInt(savedBotEndTime);
             if (savedTotalTaps) totalTaps = parseInt(savedTotalTaps);
+            if (savedUserName) userNameElement.textContent = savedUserName;
             
             if (savedTapLevel) tapLevel = parseInt(savedTapLevel);
             if (savedEnergyLevel) energyLevel = parseInt(savedEnergyLevel);
             if (savedRechargeLevel) rechargeLevel = parseInt(savedRechargeLevel);
             if (savedBotLevel) botLevel = parseInt(savedBotLevel);
+            
+            userAvatarElement.textContent = userNameElement.textContent.charAt(0).toUpperCase();
             
             tapValue = tapLevel;
             maxEnergy = 1000 + (energyLevel - 1) * 500;
@@ -1012,17 +1033,18 @@
         }
         
         function saveGameData() {
-            localStorage.setItem('coinCount', coinCount);
-            localStorage.setItem('level', level);
-            localStorage.setItem('energy', energy);
-            localStorage.setItem('turboEndTime', turboEndTime);
-            localStorage.setItem('botEndTime', botEndTime);
-            localStorage.setItem('totalTaps', totalTaps);
+            localStorage.setItem(getUserStorageKey('coinCount'), coinCount);
+            localStorage.setItem(getUserStorageKey('level'), level);
+            localStorage.setItem(getUserStorageKey('energy'), energy);
+            localStorage.setItem(getUserStorageKey('turboEndTime'), turboEndTime);
+            localStorage.setItem(getUserStorageKey('botEndTime'), botEndTime);
+            localStorage.setItem(getUserStorageKey('totalTaps'), totalTaps);
+            localStorage.setItem(getUserStorageKey('userName'), userNameElement.textContent);
             
-            localStorage.setItem('tapLevel', tapLevel);
-            localStorage.setItem('energyLevel', energyLevel);
-            localStorage.setItem('rechargeLevel', rechargeLevel);
-            localStorage.setItem('botLevel', botLevel);
+            localStorage.setItem(getUserStorageKey('tapLevel'), tapLevel);
+            localStorage.setItem(getUserStorageKey('energyLevel'), energyLevel);
+            localStorage.setItem(getUserStorageKey('rechargeLevel'), rechargeLevel);
+            localStorage.setItem(getUserStorageKey('botLevel'), botLevel);
         }
         
         function updateUI() {
@@ -1378,6 +1400,15 @@
         
         document.getElementById('notify-friends').addEventListener('click', function() {
             showModal('اطلاع رسانی', 'شما در زمان آماده شدن این بخش مطلع خواهید شد.');
+        });
+        
+        userNameElement.addEventListener('click', function() {
+            const newName = prompt('نام خود را وارد کنید:', userNameElement.textContent);
+            if (newName && newName.trim() !== '') {
+                userNameElement.textContent = newName.trim();
+                userAvatarElement.textContent = newName.trim().charAt(0).toUpperCase();
+                saveGameData();
+            }
         });
         
         loadGameData();
