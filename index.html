@@ -102,6 +102,7 @@
             padding: 10px;
             overflow-y: auto;
             width: 100%;
+            -webkit-overflow-scrolling: touch;
         }
 
         .page {
@@ -109,6 +110,7 @@
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
+            padding-bottom: 80px;
         }
 
         .page.active {
@@ -492,7 +494,7 @@
         }
 
         .menu {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
@@ -1208,210 +1210,4 @@
         }, 1000);
         
         document.getElementById('boost-turbo').addEventListener('click', function() {
-            if (turboActive) {
-                showModal('توربو فعال است', `توربو تا ${Math.ceil((turboEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
-                return;
-            }
-            
-            showModal('فعال‌سازی توربو', 'آیا می‌خواهید توربو را برای 30 ثانیه فعال کنید؟', () => {
-                activateTurbo();
-                setTimeout(() => deactivateTurbo(), 30000);
-            });
-        });
-        
-        document.getElementById('boost-energy').addEventListener('click', function() {
-            if (energy >= maxEnergy) {
-                showModal('انرژی کامل', 'انرژی شما در حال حاضر کامل است.');
-                return;
-            }
-            
-            showModal('شارژ انرژی', 'آیا می‌خواهید انرژی خود را به طور کامل شارژ کنید؟', () => {
-                energy = maxEnergy;
-                updateUI();
-                saveGameData();
-            });
-        });
-        
-        document.getElementById('boost-bot').addEventListener('click', function() {
-            if (botActive) {
-                showModal('بات فعال است', `بات تا ${Math.ceil((botEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
-                return;
-            }
-            
-            if (botLevel === 0) {
-                showModal('بات غیرفعال', 'برای استفاده از بات، ابتدا آن را در بخش آمار ارتقا دهید.');
-                return;
-            }
-            
-            showModal('فعال‌سازی بات', 'آیا می‌خواهید بات را برای 1 ساعت فعال کنید؟', () => {
-                activateBot();
-                setTimeout(() => deactivateBot(), 3600000);
-            });
-        });
-        
-        function activateTurbo() {
-            turboActive = true;
-            turboEndTime = Date.now() + 30000;
-            saveGameData();
-            
-            document.getElementById('boost-turbo').style.background = 'rgba(255, 215, 0, 0.3)';
-        }
-        
-        function deactivateTurbo() {
-            turboActive = false;
-            turboEndTime = 0;
-            saveGameData();
-            
-            document.getElementById('boost-turbo').style.background = 'rgba(255, 255, 255, 0.1)';
-        }
-        
-        function activateBot() {
-            botActive = true;
-            botEndTime = Date.now() + 3600000;
-            saveGameData();
-            
-            document.getElementById('boost-bot').style.background = 'rgba(255, 215, 0, 0.3)';
-        }
-        
-        function deactivateBot() {
-            botActive = false;
-            botEndTime = 0;
-            saveGameData();
-            
-            document.getElementById('boost-bot').style.background = 'rgba(255, 255, 255, 0.1)';
-        }
-        
-        upgradeTapButton.addEventListener('click', function() {
-            const cost = tapLevel * 1000;
-            
-            if (coinCount >= cost) {
-                coinCount -= cost;
-                tapLevel++;
-                tapValue = tapLevel;
-                
-                updateUI();
-                updateUpgradeButtons();
-                saveGameData();
-                
-                showModal('ارتقا موفق', `قدرت ضربه شما به سطح ${tapLevel} افزایش یافت!`);
-            }
-        });
-        
-        upgradeEnergyButton.addEventListener('click', function() {
-            const cost = energyLevel * 1500;
-            
-            if (coinCount >= cost) {
-                coinCount -= cost;
-                energyLevel++;
-                maxEnergy = 1000 + (energyLevel - 1) * 500;
-                energy = maxEnergy;
-                
-                updateUI();
-                updateUpgradeButtons();
-                saveGameData();
-                
-                showModal('ارتقا موفق', `ظرفیت انرژی شما به سطح ${energyLevel} افزایش یافت!`);
-            }
-        });
-        
-        upgradeRechargeButton.addEventListener('click', function() {
-            const cost = rechargeLevel * 2000;
-            
-            if (coinCount >= cost) {
-                coinCount -= cost;
-                rechargeLevel++;
-                energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
-                
-                updateUI();
-                updateUpgradeButtons();
-                saveGameData();
-                
-                showModal('ارتقا موفق', `نرخ شارژ انرژی شما به سطح ${rechargeLevel} افزایش یافت!`);
-            }
-        });
-        
-        upgradeBotButton.addEventListener('click', function() {
-            const cost = (botLevel + 1) * 5000;
-            
-            if (coinCount >= cost) {
-                coinCount -= cost;
-                botLevel++;
-                
-                updateUI();
-                updateUpgradeButtons();
-                saveGameData();
-                
-                showModal('ارتقا موفق', `بات خودکار شما به سطح ${botLevel} افزایش یافت!`);
-            }
-        });
-        
-        menuHome.addEventListener('click', function() {
-            setActiveMenu(menuHome);
-            setActivePage(homePage);
-        });
-        
-        menuAirdrop.addEventListener('click', function() {
-            setActiveMenu(menuAirdrop);
-            setActivePage(airdropPage);
-        });
-        
-        menuFriends.addEventListener('click', function() {
-            setActiveMenu(menuFriends);
-            setActivePage(friendsPage);
-        });
-        
-        menuStats.addEventListener('click', function() {
-            setActiveMenu(menuStats);
-            setActivePage(statsPage);
-        });
-        
-        function setActiveMenu(activeMenuItem) {
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            activeMenuItem.classList.add('active');
-        }
-        
-        function setActivePage(activePage) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            activePage.classList.add('active');
-        }
-        
-        function showModal(title, description, onConfirm) {
-            modalTitle.textContent = title;
-            modalDescription.textContent = description;
-            modal.style.display = 'flex';
-            
-            modalButton.onclick = function() {
-                modal.style.display = 'none';
-                if (onConfirm) onConfirm();
-            };
-        }
-        
-        closeModalButton.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-        
-        document.getElementById('connect-wallet').addEventListener('click', function() {
-            showModal('اتصال به کیف پول', 'این قابلیت به زودی اضافه خواهد شد.');
-        });
-        
-        document.getElementById('notify-friends').addEventListener('click', function() {
-            showModal('اطلاع رسانی', 'شما در زمان آماده شدن این بخش مطلع خواهید شد.');
-        });
-        
-        userNameElement.addEventListener('click', function() {
-            const newName = prompt('نام خود را وارد کنید:', userNameElement.textContent);
-            if (newName && newName.trim() !== '') {
-                userNameElement.textContent = newName.trim();
-                userAvatarElement.textContent = newName.trim().charAt(0).toUpperCase();
-                saveGameData();
-            }
-        });
-        
-        loadGameData();
-    </script>
-</body>
-</html>
+            if
