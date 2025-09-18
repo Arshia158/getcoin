@@ -1,1 +1,54 @@
-hi
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Update</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            from: { boxShadow: '0 0 20px #3b82f6' },
+                            to: { boxShadow: '0 0 30px #3b82f6, 0 0 40px #3b82f6' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 50%, #7e22ce 100%);
+        }
+        .glass-effect {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(55, 65, 81, 0.3);
+        }
+        .subscription-link {
+            word-break: break-all;
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="dark gradient-bg min-h-screen flex items-center justify-center">
+    <div class="glass-effect p-10 rounded-xl shadow-lg text-white text-4xl font-semibold animate-glow select-none">
+        update...
+    </div>
+</body>
+</html>
