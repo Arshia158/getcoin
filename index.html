@@ -380,7 +380,7 @@
             flex-direction: column;
             width: 100%;
             max-width: 500px;
-            padding: 20px 0;
+            padding: 70px 0 20px;
         }
 
         .stats-card {
@@ -913,301 +913,478 @@
     </div>
     
     <script>
-        function getUserId() {
-            let userId = localStorage.getItem('user_id');
-            if (!userId) {
-                const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
-                userId = 'user_' + btoa(fingerprint).substring(0, 16);
-                localStorage.setItem('user_id', userId);
+        document.addEventListener('DOMContentLoaded', function() {
+            function getUserId() {
+                let userId = localStorage.getItem('user_id');
+                if (!userId) {
+                    const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+                    userId = 'user_' + btoa(fingerprint).substring(0, 16);
+                    localStorage.setItem('user_id', userId);
+                }
+                return userId;
             }
-            return userId;
-        }
 
-        function getUserStorageKey(key) {
-            const userId = getUserId();
-            return `${userId}_${key}`;
-        }
+            function getUserStorageKey(key) {
+                const userId = getUserId();
+                return `${userId}_${key}`;
+            }
 
-        let coinCount = 0;
-        let level = 1;
-        let energy = 1000;
-        let maxEnergy = 1000;
-        let energyRechargeRate = 1;
-        let tapValue = 1;
-        let turboActive = false;
-        let turboEndTime = 0;
-        let botActive = false;
-        let botEndTime = 0;
-        let totalTaps = 0;
-        
-        let tapLevel = 1;
-        let energyLevel = 1;
-        let rechargeLevel = 1;
-        let botLevel = 0;
-        
-        const coinCountElement = document.getElementById('coin-count');
-        const levelNumberElement = document.getElementById('level-number');
-        const coinButton = document.getElementById('coin-button');
-        const energyFillElement = document.getElementById('energy-fill');
-        const energyTextElement = document.getElementById('energy-text');
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDescription = document.getElementById('modal-description');
-        const modalButton = document.getElementById('modal-button');
-        const closeModalButton = document.getElementById('close-modal');
-        const particlesContainer = document.getElementById('particles');
-        const userAvatarElement = document.getElementById('user-avatar');
-        const userNameElement = document.getElementById('user-name');
-        
-        const menuHome = document.getElementById('menu-home');
-        const menuAirdrop = document.getElementById('menu-airdrop');
-        const menuFriends = document.getElementById('menu-friends');
-        const menuStats = document.getElementById('menu-stats');
-        
-        const homePage = document.getElementById('home-page');
-        const airdropPage = document.getElementById('airdrop-page');
-        const friendsPage = document.getElementById('friends-page');
-        const statsPage = document.getElementById('stats-page');
-        
-        const statsCoins = document.getElementById('stats-coins');
-        const statsLevel = document.getElementById('stats-level');
-        const statsTapPower = document.getElementById('stats-tap-power');
-        const statsMaxEnergy = document.getElementById('stats-max-energy');
-        const statsTaps = document.getElementById('stats-taps');
-        
-        const tapLevelElement = document.getElementById('tap-level');
-        const energyLevelElement = document.getElementById('energy-level');
-        const rechargeLevelElement = document.getElementById('recharge-level');
-        const botLevelElement = document.getElementById('bot-level');
-        
-        const upgradeTapButton = document.getElementById('upgrade-tap');
-        const upgradeEnergyButton = document.getElementById('upgrade-energy');
-        const upgradeRechargeButton = document.getElementById('upgrade-recharge');
-        const upgradeBotButton = document.getElementById('upgrade-bot');
-        
-        function loadGameData() {
-            const savedCoinCount = localStorage.getItem(getUserStorageKey('coinCount'));
-            const savedLevel = localStorage.getItem(getUserStorageKey('level'));
-            const savedEnergy = localStorage.getItem(getUserStorageKey('energy'));
-            const savedTurboEndTime = localStorage.getItem(getUserStorageKey('turboEndTime'));
-            const savedBotEndTime = localStorage.getItem(getUserStorageKey('botEndTime'));
-            const savedTotalTaps = localStorage.getItem(getUserStorageKey('totalTaps'));
-            const savedUserName = localStorage.getItem(getUserStorageKey('userName'));
+            let coinCount = 0;
+            let level = 1;
+            let energy = 1000;
+            let maxEnergy = 1000;
+            let energyRechargeRate = 1;
+            let tapValue = 1;
+            let turboActive = false;
+            let turboEndTime = 0;
+            let botActive = false;
+            let botEndTime = 0;
+            let totalTaps = 0;
             
-            const savedTapLevel = localStorage.getItem(getUserStorageKey('tapLevel'));
-            const savedEnergyLevel = localStorage.getItem(getUserStorageKey('energyLevel'));
-            const savedRechargeLevel = localStorage.getItem(getUserStorageKey('rechargeLevel'));
-            const savedBotLevel = localStorage.getItem(getUserStorageKey('botLevel'));
+            let tapLevel = 1;
+            let energyLevel = 1;
+            let rechargeLevel = 1;
+            let botLevel = 0;
             
-            if (savedCoinCount) coinCount = parseInt(savedCoinCount);
-            if (savedLevel) level = parseInt(savedLevel);
-            if (savedEnergy) energy = parseInt(savedEnergy);
-            if (savedTurboEndTime) turboEndTime = parseInt(savedTurboEndTime);
-            if (savedBotEndTime) botEndTime = parseInt(savedBotEndTime);
-            if (savedTotalTaps) totalTaps = parseInt(savedTotalTaps);
-            if (savedUserName) userNameElement.textContent = savedUserName;
+            const coinCountElement = document.getElementById('coin-count');
+            const levelNumberElement = document.getElementById('level-number');
+            const coinButton = document.getElementById('coin-button');
+            const energyFillElement = document.getElementById('energy-fill');
+            const energyTextElement = document.getElementById('energy-text');
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalButton = document.getElementById('modal-button');
+            const closeModalButton = document.getElementById('close-modal');
+            const particlesContainer = document.getElementById('particles');
+            const userAvatarElement = document.getElementById('user-avatar');
+            const userNameElement = document.getElementById('user-name');
             
-            if (savedTapLevel) tapLevel = parseInt(savedTapLevel);
-            if (savedEnergyLevel) energyLevel = parseInt(savedEnergyLevel);
-            if (savedRechargeLevel) rechargeLevel = parseInt(savedRechargeLevel);
-            if (savedBotLevel) botLevel = parseInt(savedBotLevel);
+            const menuHome = document.getElementById('menu-home');
+            const menuAirdrop = document.getElementById('menu-airdrop');
+            const menuFriends = document.getElementById('menu-friends');
+            const menuStats = document.getElementById('menu-stats');
             
-            userAvatarElement.textContent = userNameElement.textContent.charAt(0).toUpperCase();
+            const homePage = document.getElementById('home-page');
+            const airdropPage = document.getElementById('airdrop-page');
+            const friendsPage = document.getElementById('friends-page');
+            const statsPage = document.getElementById('stats-page');
             
-            tapValue = tapLevel;
-            maxEnergy = 1000 + (energyLevel - 1) * 500;
-            energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
+            const statsCoins = document.getElementById('stats-coins');
+            const statsLevel = document.getElementById('stats-level');
+            const statsTapPower = document.getElementById('stats-tap-power');
+            const statsMaxEnergy = document.getElementById('stats-max-energy');
+            const statsTaps = document.getElementById('stats-taps');
             
-            updateUI();
-            updateUpgradeButtons();
+            const tapLevelElement = document.getElementById('tap-level');
+            const energyLevelElement = document.getElementById('energy-level');
+            const rechargeLevelElement = document.getElementById('recharge-level');
+            const botLevelElement = document.getElementById('bot-level');
             
-            if (turboEndTime > Date.now()) {
-                activateTurbo();
-                const remainingTime = Math.floor((turboEndTime - Date.now()) / 1000);
-                setTimeout(() => deactivateTurbo(), remainingTime * 1000);
-            }
+            const upgradeTapButton = document.getElementById('upgrade-tap');
+            const upgradeEnergyButton = document.getElementById('upgrade-energy');
+            const upgradeRechargeButton = document.getElementById('upgrade-recharge');
+            const upgradeBotButton = document.getElementById('upgrade-bot');
             
-            if (botEndTime > Date.now()) {
-                activateBot();
-                const remainingTime = Math.floor((botEndTime - Date.now()) / 1000);
-                setTimeout(() => deactivateBot(), remainingTime * 1000);
-            }
-        }
-        
-        function saveGameData() {
-            localStorage.setItem(getUserStorageKey('coinCount'), coinCount);
-            localStorage.setItem(getUserStorageKey('level'), level);
-            localStorage.setItem(getUserStorageKey('energy'), energy);
-            localStorage.setItem(getUserStorageKey('turboEndTime'), turboEndTime);
-            localStorage.setItem(getUserStorageKey('botEndTime'), botEndTime);
-            localStorage.setItem(getUserStorageKey('totalTaps'), totalTaps);
-            localStorage.setItem(getUserStorageKey('userName'), userNameElement.textContent);
-            
-            localStorage.setItem(getUserStorageKey('tapLevel'), tapLevel);
-            localStorage.setItem(getUserStorageKey('energyLevel'), energyLevel);
-            localStorage.setItem(getUserStorageKey('rechargeLevel'), rechargeLevel);
-            localStorage.setItem(getUserStorageKey('botLevel'), botLevel);
-        }
-        
-        function updateUI() {
-            coinCountElement.textContent = formatNumber(coinCount);
-            levelNumberElement.textContent = level;
-            energyFillElement.style.width = `${(energy / maxEnergy) * 100}%`;
-            energyTextElement.textContent = `${energy}/${maxEnergy}`;
-            
-            statsCoins.textContent = formatNumber(coinCount);
-            statsLevel.textContent = level;
-            statsTapPower.textContent = tapValue;
-            statsMaxEnergy.textContent = maxEnergy;
-            statsTaps.textContent = formatNumber(totalTaps);
-            
-            tapLevelElement.textContent = tapLevel;
-            energyLevelElement.textContent = energyLevel;
-            rechargeLevelElement.textContent = rechargeLevel;
-            botLevelElement.textContent = botLevel;
-        }
-        
-        function updateUpgradeButtons() {
-            const tapUpgradeCost = tapLevel * 1000;
-            upgradeTapButton.textContent = `ارتقا (${formatNumber(tapUpgradeCost)})`;
-            upgradeTapButton.disabled = coinCount < tapUpgradeCost;
-            
-            const energyUpgradeCost = energyLevel * 1500;
-            upgradeEnergyButton.textContent = `ارتقا (${formatNumber(energyUpgradeCost)})`;
-            upgradeEnergyButton.disabled = coinCount < energyUpgradeCost;
-            
-            const rechargeUpgradeCost = rechargeLevel * 2000;
-            upgradeRechargeButton.textContent = `ارتقا (${formatNumber(rechargeUpgradeCost)})`;
-            upgradeRechargeButton.disabled = coinCount < rechargeUpgradeCost;
-            
-            const botUpgradeCost = (botLevel + 1) * 5000;
-            upgradeBotButton.textContent = `ارتقا (${formatNumber(botUpgradeCost)})`;
-            upgradeBotButton.disabled = coinCount < botUpgradeCost;
-        }
-        
-        function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(2) + 'M';
-            } else if (num >= 1000) {
-                return (num / 1000).toFixed(2) + 'K';
-            }
-            return num.toString();
-        }
-        
-        coinButton.addEventListener('click', function(e) {
-            if (energy <= 0) {
-                showModal('انرژی شما تمام شده', 'لطفاً برای ادامه بازی انرژی خود را شارژ کنید یا صبر کنید تا به طور خودکار شارژ شود.');
-                return;
-            }
-            
-            let currentTapValue = tapValue;
-            if (turboActive) {
-                currentTapValue *= 5;
-            }
-            
-            coinCount += currentTapValue;
-            totalTaps++;
-            
-            energy = Math.max(0, energy - 1);
-            
-            updateUI();
-            updateUpgradeButtons();
-            saveGameData();
-            
-            createFloatingCoin(e, currentTapValue);
-            createParticles(e);
-            
-            checkLevelUp();
-        });
-        
-        function createFloatingCoin(e, value) {
-            const floatingCoin = document.createElement('div');
-            floatingCoin.classList.add('floating-coin');
-            floatingCoin.textContent = `+${value}`;
-            
-            const rect = coinButton.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            floatingCoin.style.left = `${x}px`;
-            floatingCoin.style.top = `${y}px`;
-            
-            coinButton.appendChild(floatingCoin);
-            
-            setTimeout(() => {
-                floatingCoin.remove();
-            }, 1500);
-        }
-        
-        function createParticles(e) {
-            const rect = coinButton.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
+            function loadGameData() {
+                const savedCoinCount = localStorage.getItem(getUserStorageKey('coinCount'));
+                const savedLevel = localStorage.getItem(getUserStorageKey('level'));
+                const savedEnergy = localStorage.getItem(getUserStorageKey('energy'));
+                const savedTurboEndTime = localStorage.getItem(getUserStorageKey('turboEndTime'));
+                const savedBotEndTime = localStorage.getItem(getUserStorageKey('botEndTime'));
+                const savedTotalTaps = localStorage.getItem(getUserStorageKey('totalTaps'));
+                const savedUserName = localStorage.getItem(getUserStorageKey('userName'));
                 
-                const size = Math.random() * 12 + 6;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
+                const savedTapLevel = localStorage.getItem(getUserStorageKey('tapLevel'));
+                const savedEnergyLevel = localStorage.getItem(getUserStorageKey('energyLevel'));
+                const savedRechargeLevel = localStorage.getItem(getUserStorageKey('rechargeLevel'));
+                const savedBotLevel = localStorage.getItem(getUserStorageKey('botLevel'));
                 
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
+                if (savedCoinCount) coinCount = parseInt(savedCoinCount);
+                if (savedLevel) level = parseInt(savedLevel);
+                if (savedEnergy) energy = parseInt(savedEnergy);
+                if (savedTurboEndTime) turboEndTime = parseInt(savedTurboEndTime);
+                if (savedBotEndTime) botEndTime = parseInt(savedBotEndTime);
+                if (savedTotalTaps) totalTaps = parseInt(savedTotalTaps);
+                if (savedUserName) userNameElement.textContent = savedUserName;
                 
-                particle.style.animation = `particle-animation ${Math.random() * 0.6 + 0.4}s ease-out forwards`;
+                if (savedTapLevel) tapLevel = parseInt(savedTapLevel);
+                if (savedEnergyLevel) energyLevel = parseInt(savedEnergyLevel);
+                if (savedRechargeLevel) rechargeLevel = parseInt(savedRechargeLevel);
+                if (savedBotLevel) botLevel = parseInt(savedBotLevel);
                 
-                coinButton.appendChild(particle);
+                userAvatarElement.textContent = userNameElement.textContent.charAt(0).toUpperCase();
                 
-                setTimeout(() => {
-                    particle.remove();
-                }, 1000);
-            }
-        }
-        
-        function checkLevelUp() {
-            const levelThresholds = [100, 1000, 10000, 100000, 1000000, 10000000];
-            
-            if (level < levelThresholds.length && coinCount >= levelThresholds[level - 1]) {
-                level++;
-                maxEnergy += 500;
-                energy = maxEnergy;
-                tapValue += 1;
+                tapValue = tapLevel;
+                maxEnergy = 1000 + (energyLevel - 1) * 500;
+                energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
                 
                 updateUI();
                 updateUpgradeButtons();
-                saveGameData();
                 
-                showModal('سطح شما افزایش یافت!', `تبریک! شما به سطح ${level} رسیدید. انرژی و قدرت ضربه شما افزایش یافت.`);
+                if (turboEndTime > Date.now()) {
+                    activateTurbo();
+                    const remainingTime = Math.floor((turboEndTime - Date.now()) / 1000);
+                    setTimeout(() => deactivateTurbo(), remainingTime * 1000);
+                }
+                
+                if (botEndTime > Date.now()) {
+                    activateBot();
+                    const remainingTime = Math.floor((botEndTime - Date.now()) / 1000);
+                    setTimeout(() => deactivateBot(), remainingTime * 1000);
+                }
             }
-        }
-        
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy = Math.min(maxEnergy, energy + energyRechargeRate);
-                updateUI();
-                saveGameData();
+            
+            function saveGameData() {
+                localStorage.setItem(getUserStorageKey('coinCount'), coinCount);
+                localStorage.setItem(getUserStorageKey('level'), level);
+                localStorage.setItem(getUserStorageKey('energy'), energy);
+                localStorage.setItem(getUserStorageKey('turboEndTime'), turboEndTime);
+                localStorage.setItem(getUserStorageKey('botEndTime'), botEndTime);
+                localStorage.setItem(getUserStorageKey('totalTaps'), totalTaps);
+                localStorage.setItem(getUserStorageKey('userName'), userNameElement.textContent);
+                
+                localStorage.setItem(getUserStorageKey('tapLevel'), tapLevel);
+                localStorage.setItem(getUserStorageKey('energyLevel'), energyLevel);
+                localStorage.setItem(getUserStorageKey('rechargeLevel'), rechargeLevel);
+                localStorage.setItem(getUserStorageKey('botLevel'), botLevel);
             }
-        }, 1000);
-        
-        setInterval(() => {
-            if (botActive && energy > 0) {
-                coinCount += tapValue;
-                energy = Math.max(0, energy - 1);
+            
+            function updateUI() {
+                coinCountElement.textContent = formatNumber(coinCount);
+                levelNumberElement.textContent = level;
+                energyFillElement.style.width = `${(energy / maxEnergy) * 100}%`;
+                energyTextElement.textContent = `${energy}/${maxEnergy}`;
+                
+                statsCoins.textContent = formatNumber(coinCount);
+                statsLevel.textContent = level;
+                statsTapPower.textContent = tapValue;
+                statsMaxEnergy.textContent = maxEnergy;
+                statsTaps.textContent = formatNumber(totalTaps);
+                
+                tapLevelElement.textContent = tapLevel;
+                energyLevelElement.textContent = energyLevel;
+                rechargeLevelElement.textContent = rechargeLevel;
+                botLevelElement.textContent = botLevel;
+            }
+            
+            function updateUpgradeButtons() {
+                const tapUpgradeCost = tapLevel * 1000;
+                upgradeTapButton.textContent = `ارتقا (${formatNumber(tapUpgradeCost)})`;
+                upgradeTapButton.disabled = coinCount < tapUpgradeCost;
+                
+                const energyUpgradeCost = energyLevel * 1500;
+                upgradeEnergyButton.textContent = `ارتقا (${formatNumber(energyUpgradeCost)})`;
+                upgradeEnergyButton.disabled = coinCount < energyUpgradeCost;
+                
+                const rechargeUpgradeCost = rechargeLevel * 2000;
+                upgradeRechargeButton.textContent = `ارتقا (${formatNumber(rechargeUpgradeCost)})`;
+                upgradeRechargeButton.disabled = coinCount < rechargeUpgradeCost;
+                
+                const botUpgradeCost = (botLevel + 1) * 5000;
+                upgradeBotButton.textContent = `ارتقا (${formatNumber(botUpgradeCost)})`;
+                upgradeBotButton.disabled = coinCount < botUpgradeCost;
+            }
+            
+            function formatNumber(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(2) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(2) + 'K';
+                }
+                return num.toString();
+            }
+            
+            coinButton.addEventListener('click', function(e) {
+                if (energy <= 0) {
+                    showModal('انرژی شما تمام شده', 'لطفاً برای ادامه بازی انرژی خود را شارژ کنید یا صبر کنید تا به طور خودکار شارژ شود.');
+                    return;
+                }
+                
+                let currentTapValue = tapValue;
+                if (turboActive) {
+                    currentTapValue *= 5;
+                }
+                
+                coinCount += currentTapValue;
                 totalTaps++;
                 
+                energy = Math.max(0, energy - 1);
+                
                 updateUI();
                 updateUpgradeButtons();
                 saveGameData();
                 
-                coinButton.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    coinButton.style.transform = 'scale(1)';
-                }, 100);
+                createFloatingCoin(e, currentTapValue);
+                createParticles(e);
                 
                 checkLevelUp();
+            });
+            
+            function createFloatingCoin(e, value) {
+                const floatingCoin = document.createElement('div');
+                floatingCoin.classList.add('floating-coin');
+                floatingCoin.textContent = `+${value}`;
+                
+                const rect = coinButton.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                floatingCoin.style.left = `${x}px`;
+                floatingCoin.style.top = `${y}px`;
+                
+                coinButton.appendChild(floatingCoin);
+                
+                setTimeout(() => {
+                    floatingCoin.remove();
+                }, 1500);
             }
-        }, 1000);
-        
-        document.getElementById('boost-turbo').addEventListener('click', function() {
-            if
+            
+            function createParticles(e) {
+                const rect = coinButton.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                for (let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    const size = Math.random() * 12 + 6;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    particle.style.animation = `particle-animation ${Math.random() * 0.6 + 0.4}s ease-out forwards`;
+                    
+                    coinButton.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1000);
+                }
+            }
+            
+            function checkLevelUp() {
+                const levelThresholds = [100, 1000, 10000, 100000, 1000000, 10000000];
+                
+                if (level < levelThresholds.length && coinCount >= levelThresholds[level - 1]) {
+                    level++;
+                    maxEnergy += 500;
+                    energy = maxEnergy;
+                    tapValue += 1;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    showModal('سطح شما افزایش یافت!', `تبریک! شما به سطح ${level} رسیدید. انرژی و قدرت ضربه شما افزایش یافت.`);
+                }
+            }
+            
+            setInterval(() => {
+                if (energy < maxEnergy) {
+                    energy = Math.min(maxEnergy, energy + energyRechargeRate);
+                    updateUI();
+                    saveGameData();
+                }
+            }, 1000);
+            
+            setInterval(() => {
+                if (botActive && energy > 0) {
+                    coinCount += tapValue;
+                    energy = Math.max(0, energy - 1);
+                    totalTaps++;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    coinButton.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        coinButton.style.transform = 'scale(1)';
+                    }, 100);
+                    
+                    checkLevelUp();
+                }
+            }, 1000);
+            
+            document.getElementById('boost-turbo').addEventListener('click', function() {
+                if (turboActive) {
+                    showModal('توربو فعال است', `توربو تا ${Math.ceil((turboEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
+                    return;
+                }
+                
+                activateTurbo();
+                turboEndTime = Date.now() + 30000;
+                
+                showModal('توربو فعال شد', 'قدرت ضربه شما برای 30 ثانیه 5 برابر می‌شود!');
+                
+                setTimeout(() => {
+                    deactivateTurbo();
+                }, 30000);
+                
+                saveGameData();
+            });
+            
+            function activateTurbo() {
+                turboActive = true;
+                document.getElementById('boost-turbo').style.background = 'rgba(76, 175, 80, 0.3)';
+            }
+            
+            function deactivateTurbo() {
+                turboActive = false;
+                document.getElementById('boost-turbo').style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+            
+            document.getElementById('boost-energy').addEventListener('click', function() {
+                energy = maxEnergy;
+                updateUI();
+                saveGameData();
+                showModal('انرژی شارژ شد', 'انرژی شما به حداکثر مقدار رسید!');
+            });
+            
+            document.getElementById('boost-bot').addEventListener('click', function() {
+                if (botActive) {
+                    showModal('بات فعال است', `بات تا ${Math.ceil((botEndTime - Date.now()) / 1000)} ثانیه دیگر فعال است.`);
+                    return;
+                }
+                
+                activateBot();
+                botEndTime = Date.now() + 60000;
+                
+                showModal('بات فعال شد', 'بات برای 60 ثانیه به طور خودکار برای شما سکه جمع‌آوری می‌کند!');
+                
+                setTimeout(() => {
+                    deactivateBot();
+                }, 60000);
+                
+                saveGameData();
+            });
+            
+            function activateBot() {
+                botActive = true;
+                document.getElementById('boost-bot').style.background = 'rgba(76, 175, 80, 0.3)';
+            }
+            
+            function deactivateBot() {
+                botActive = false;
+                document.getElementById('boost-bot').style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+            
+            document.getElementById('connect-wallet').addEventListener('click', function() {
+                showModal('اتصال به کیف پول', 'این قابلیت در حال توسعه است و به زودی در دسترس خواهد بود.');
+            });
+            
+            document.getElementById('notify-friends').addEventListener('click', function() {
+                showModal('اطلاع رسانی', 'وقتی بخش دوستان آماده شود، به شما اطلاع خواهیم داد.');
+            });
+            
+            upgradeTapButton.addEventListener('click', function() {
+                const cost = tapLevel * 1000;
+                if (coinCount >= cost) {
+                    coinCount -= cost;
+                    tapLevel++;
+                    tapValue = tapLevel;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    showModal('ارتقا موفق', 'قدرت ضربه شما افزایش یافت!');
+                }
+            });
+            
+            upgradeEnergyButton.addEventListener('click', function() {
+                const cost = energyLevel * 1500;
+                if (coinCount >= cost) {
+                    coinCount -= cost;
+                    energyLevel++;
+                    maxEnergy = 1000 + (energyLevel - 1) * 500;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    showModal('ارتقا موفق', 'ظرفیت انرژی شما افزایش یافت!');
+                }
+            });
+            
+            upgradeRechargeButton.addEventListener('click', function() {
+                const cost = rechargeLevel * 2000;
+                if (coinCount >= cost) {
+                    coinCount -= cost;
+                    rechargeLevel++;
+                    energyRechargeRate = 1 + (rechargeLevel - 1) * 0.5;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    showModal('ارتقا موفق', 'سرعت شارژ انرژی شما افزایش یافت!');
+                }
+            });
+            
+            upgradeBotButton.addEventListener('click', function() {
+                const cost = (botLevel + 1) * 5000;
+                if (coinCount >= cost) {
+                    coinCount -= cost;
+                    botLevel++;
+                    
+                    updateUI();
+                    updateUpgradeButtons();
+                    saveGameData();
+                    
+                    showModal('ارتقا موفق', 'سطح بات شما افزایش یافت!');
+                }
+            });
+            
+            function showModal(title, description) {
+                modalTitle.textContent = title;
+                modalDescription.textContent = description;
+                modal.style.display = 'flex';
+            }
+            
+            closeModalButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            modalButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            menuHome.addEventListener('click', function() {
+                switchPage('home');
+            });
+            
+            menuAirdrop.addEventListener('click', function() {
+                switchPage('airdrop');
+            });
+            
+            menuFriends.addEventListener('click', function() {
+                switchPage('friends');
+            });
+            
+            menuStats.addEventListener('click', function() {
+                switchPage('stats');
+            });
+            
+            function switchPage(pageName) {
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                document.getElementById(`menu-${pageName}`).classList.add('active');
+                document.getElementById(`${pageName}-page`).classList.add('active');
+            }
+            
+            loadGameData();
+        });
+    </script>
+</body>
+</html>
